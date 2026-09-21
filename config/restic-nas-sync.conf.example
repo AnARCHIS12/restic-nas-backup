@@ -7,10 +7,12 @@ RESTIC_DATA="/srv/rest-server/data"
 # Local mount point of the NAS SMB share.
 MOUNT_POINT="/mnt/restic"
 
-# Expected CIFS source. This is checked before any write.
-# Example:
-# NAS_SOURCE="//192.168.0.123/Restic"
-NAS_SOURCE=""
+# NAS address. Change only this value if the NAS IP changes.
+# Keep the real value in the local config; do not commit your LAN IP.
+NAS_IP=""
+
+# NAS SMB share name.
+NAS_SHARE="Restic"
 
 # Docker container running rest-server.
 REST_SERVER_CONTAINER="rest-server"
