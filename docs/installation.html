@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -10,11 +10,11 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="./index.html"><span class="brand-mark">R</span><span>restic-nas-backup</span></a>
+    <a class="brand" href="./index.html"><img class="site-logo" src="./logo.svg" alt="restic-nas-backup logo"><span>restic-nas-backup</span></a>
     <nav>
-      <a href="./index.html">Accueil</a>
+      <a href="./index.html">Home</a>
       <a class="active" href="./installation.html">Installation</a>
-      <a href="./restauration.html">Restauration</a>
+      <a href="./restauration.html">Restoration</a>
       <a class="github-link" href="https://github.com/AnARCHIS12/restic-nas-backup">GitHub</a>
     </nav>
   </header>
@@ -23,25 +23,25 @@
     <div class="doc-heading">
       <div class="eyebrow">GUIDE</div>
       <h1>Installation</h1>
-      <p>Mettre en place la copie quotidienne du repository Restic vers un NAS SMB/CIFS.</p>
+      <p>Set up a daily copy of a Restic repository to an SMB/CIFS NAS.</p>
     </div>
 
-    <aside class="notice"><strong>Principe</strong> Le script ne stocke aucun mot de passe dans le dépôt. Le fichier SMB reste local sur le serveur.</aside>
+    <aside class="notice"><strong>Principle</strong> The script stores no passwords in the repository. The SMB credentials file stays local on the server.</aside>
 
     <section>
-      <h2>1. Préparer le partage NAS</h2>
-      <p>Créez un partage, par exemple <code>Restic</code>, avec un compte NAS disposant de la lecture/écriture.</p>
+      <h2>1. Prepare the NAS share</h2>
+      <p>Create a share, for example <code>Restic</code>, with a NAS account that has read/write access.</p>
     </section>
 
     <section>
-      <h2>2. Monter le NAS</h2>
+      <h2>2. Mount the NAS</h2>
       <pre><code>sudo mkdir -p /mnt/restic
 
 sudo mount -t cifs //NAS_IP/Restic /mnt/restic \
   -o credentials=/root/.smb-restic,vers=3.0,sec=ntlmssp
 
 findmnt /mnt/restic</code></pre>
-      <p>La dernière commande doit afficher le partage CIFS du NAS. Ne lancez aucune synchronisation si <code>/mnt/restic</code> n'est pas réellement monté.</p>
+      <p>The last command must show the NAS CIFS share. Do not start a synchronization unless <code>/mnt/restic</code> is actually mounted.</p>
     </section>
 
     <section>
@@ -54,18 +54,18 @@ sudo ./install.sh</code></pre>
     <section>
       <h2>4. Configurer</h2>
       <pre><code>sudo nano /etc/restic-nas-sync.conf</code></pre>
-      <p>Exemple local :</p>
+      <p>Local example:</p>
       <pre><code>RESTIC_DATA="/srv/rest-server/data"
 MOUNT_POINT="/mnt/restic"
 NAS_SOURCE="//NAS_IP/Restic"
 REST_SERVER_CONTAINER="rest-server"
 RSYNC_OPTIONS="-aHAX --numeric-ids --delete-delay"</code></pre>
-      <p>Remplacez <code>NAS_IP</code> par votre adresse locale. Ne remettez pas cette valeur dans un dépôt public si vous souhaitez garder votre topologie interne privée.</p>
+      <p>Set <code>NAS_IP</code> to your local address. Keep the real value out of a public repository if you want to keep your internal topology private.</p>
     </section>
 
     <section>
-      <h2>5. Programmer à 13:00</h2>
-      <p>Le timer fourni lance la synchronisation chaque jour à 13:00, selon le fuseau horaire du serveur.</p>
+      <h2>5. Schedule at 13:00</h2>
+      <p>The supplied timer runs the synchronization every day at 13:00, using the server timezone.</p>
       <pre><code>sudo systemctl daemon-reload
 sudo systemctl enable --now restic-nas-sync.timer
 
@@ -73,7 +73,7 @@ systemctl list-timers restic-nas-sync.timer</code></pre>
     </section>
 
     <section>
-      <h2>6. Tester immédiatement</h2>
+      <h2>6. Test immediately</h2>
       <pre><code>sudo systemctl start restic-nas-sync.service
 sudo journalctl -u restic-nas-sync.service -n 100 --no-pager</code></pre>
     </section>
@@ -81,7 +81,7 @@ sudo journalctl -u restic-nas-sync.service -n 100 --no-pager</code></pre>
 
   <footer>
     <span>Installation</span>
-    <a href="./index.html">← Retour à l'accueil</a>
+    <a href="./index.html">← Back to home</a>
   </footer>
 </body>
 </html>
