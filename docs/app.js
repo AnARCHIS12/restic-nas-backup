@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("pre").forEach(block=>{block.title="Cliquer pour copier";block.addEventListener("click",async()=>{if(!navigator.clipboard)return;try{await navigator.clipboard.writeText(block.innerText.trim());block.title="Copié";setTimeout(()=>{block.title="Cliquer pour copier"},900)}catch(_){}})})});
