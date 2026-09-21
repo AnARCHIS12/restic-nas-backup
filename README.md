@@ -47,6 +47,7 @@ The backup schedule is configurable by day and time and uses the server's local 
 - Simple snapshot restoration helper
 - **Full Restic repository recovery from the NAS copy**
 - Unified `restic-nas` CLI
+- Optional secure web administration GUI
 
 ## Security
 
@@ -209,6 +210,30 @@ sudo journalctl -u restic-nas-sync.service -f
 sudo systemctl disable --now restic-nas-sync.timer
 sudo systemctl enable --now restic-nas-sync.timer
 ```
+
+## Web GUI
+
+A separate web administration interface is available for users who prefer a graphical interface instead of the CLI.
+
+**Restic NAS Backup GUI:**  
+https://github.com/AnARCHIS12/restic-nas-backup-gui
+
+The GUI uses the existing `restic-nas` CLI through a hardened host agent. It provides:
+
+- Passkeys / WebAuthn
+- TOTP two-factor authentication
+- role-based access control
+- audit logging
+- live operation logs
+- backup and repository verification
+- snapshot restoration
+- protected full repository recovery
+- Telegram/webhook notifications
+- Docker/GHCR deployment
+
+The GUI does not replace the CLI. The CLI remains the underlying backup and recovery engine.
+
+For the GUI installation and production checklist, see its repository README.
 
 ## Documentation
 
