@@ -1,0 +1,9 @@
+[Unit]
+Description=Mirror Restic repository to NAS
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/restic-nas-sync.conf
+ExecStart=/usr/local/sbin/restic-nas-sync.sh
