@@ -1,16 +1,24 @@
+<div align="center">
+
+<img src="./docs/logo.svg" alt="restic-nas-backup logo" width="140">
+
 # restic-nas-backup
 
-Automate a local Restic repository mirror to an SMB/NAS share with systemd.
+**Automatically mirror a Restic repository to a NAS with systemd.**
 
-## Documentation
+[![GitHub Pages](https://github.com/AnARCHIS12/restic-nas-backup/actions/workflows/pages.yml/badge.svg)](https://github.com/AnARCHIS12/restic-nas-backup/actions/workflows/pages.yml)
+[![Platform](https://img.shields.io/badge/platform-Linux-111318?logo=linux&logoColor=white)](https://www.linux.org/)
+[![Docker](https://img.shields.io/badge/Docker-ready-111318?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Restic](https://img.shields.io/badge/backup-Restic-cc0000?logo=files&logoColor=white)](https://restic.net/)
+[![NAS](https://img.shields.io/badge/storage-SMB%2FCIFS-111318?logo=server&logoColor=white)](https://en.wikipedia.org/wiki/Server_Message_Block)
 
-**Documentation web :** https://anarchis12.github.io/restic-nas-backup/
+[**Documentation**](https://anarchis12.github.io/restic-nas-backup/) · [**Installation**](https://anarchis12.github.io/restic-nas-backup/installation.html) · [**Restoration**](https://anarchis12.github.io/restic-nas-backup/restauration.html)
 
-The site contains the installation and restoration guides.
+</div>
 
-## What it does
+## Overview
 
-This project mirrors an existing Restic repository, for example:
+`restic-nas-backup` mirrors an existing Restic repository to a NAS share using `rsync` and systemd.
 
 ```
 /srv/rest-server/data/
@@ -24,21 +32,30 @@ This project mirrors an existing Restic repository, for example:
 NAS
 ```
 
-The service stops `rest-server` while the repository is copied, then starts it again when the copy finishes.
+The service stops `rest-server` during the copy and starts it again when the synchronization finishes.
 
-The timer runs every day at **13:00** using the server's local timezone. For a Debian server configured with `Europe/Paris`, this means 13:00 Paris time.
+The supplied timer runs every day at **13:00**, using the server's local timezone.
+
+## What it provides
+
+- Daily systemd scheduling at 13:00
+- SMB/CIFS NAS support
+- Configurable NAS IP and share
+- Safety checks before writing to the destination
+- Automatic stop/start of the Rest Server container
+- Locking against concurrent runs
+- Simple restoration helper
 
 ## Security
 
-Do not commit:
+Never commit:
 
 - Restic repository data
-- Restic keys
-- repository passwords
+- Restic keys or repository passwords
 - SMB credential files
-- private IP addresses or local network configuration
+- private IP addresses or internal network details
 
-The public repository only contains generic scripts and examples.
+The public repository contains generic scripts and configuration examples only.
 
 ## Requirements
 
@@ -47,19 +64,18 @@ The public repository only contains generic scripts and examples.
 - `rest-server` running in a Docker container
 - `rsync`
 - An SMB/CIFS NAS share
-- A mounted destination such as `/mnt/restic`
 
 ## NAS mount
 
-Mount the NAS share first. Example:
+Example:
 
 ```fstab
 //NAS_IP/Restic /mnt/restic cifs credentials=/root/.smb-restic,vers=3.0,sec=ntlmssp,_netdev,nofail,x-systemd.automount 0 0
 ```
 
-Keep the real NAS IP and SMB credentials on the server, not in this repository.
+Keep the actual NAS address and credentials on the server.
 
-Check the mount:
+Verify the mount:
 
 ```bash
 findmnt /mnt/restic
@@ -69,16 +85,9 @@ It must show the expected CIFS share.
 
 ## Installation
 
-Clone the repository:
-
 ```bash
 git clone https://github.com/AnARCHIS12/restic-nas-backup.git
 cd restic-nas-backup
-```
-
-Install:
-
-```bash
 sudo ./install.sh
 ```
 
@@ -99,11 +108,9 @@ REST_SERVER_CONTAINER="rest-server"
 RSYNC_OPTIONS="-aHAX --numeric-ids --delete-delay"
 ```
 
-Set `NAS_IP` to the current NAS address. If the NAS gets a new IP, change only `NAS_IP` in the local configuration. Keep the real value out of the public repository.
+If the NAS address changes, update only `NAS_IP` in the local configuration and make the corresponding change to your SMB mount configuration.
 
 ## Test
-
-Before testing, make sure the NAS is mounted and the repository is valid.
 
 ```bash
 findmnt /mnt/restic
@@ -117,51 +124,49 @@ Check the timer:
 systemctl list-timers restic-nas-sync.timer
 ```
 
-The next daily run is scheduled for 13:00.
-
 ## Restore
 
-The NAS copy is a Restic repository. To list its snapshots:
+List snapshots from the NAS copy:
 
 ```bash
 sudo restic -r /mnt/restic snapshots
 ```
 
-Or use the helper:
+Restore using the helper:
 
 ```bash
 sudo /usr/local/sbin/restic-restore.sh
 ```
 
-It will show the available snapshots and ask which snapshot to restore. By default it restores to:
+By default, the helper restores to:
 
 ```
 /restore
 ```
 
-You can also specify the target and snapshot ID:
+Or specify a target and snapshot ID:
 
 ```bash
 sudo /usr/local/sbin/restic-restore.sh /restore 12345678
 ```
 
-The Restic repository password is still required for operations on the repository.
+The Restic repository password is still required.
 
 ## Manual controls
 
-Run a synchronization manually:
+Start a synchronization immediately:
 
 ```bash
 sudo systemctl start restic-nas-sync.service
 ```
 
-See logs:
+Follow logs:
 
 ```bash
 sudo journalctl -u restic-nas-sync.service -f
 ```
 
-Stop automatic scheduling:
+Disable the daily timer:
 
 ```bash
 sudo systemctl disable --now restic-nas-sync.timer
@@ -172,3 +177,9 @@ Re-enable it:
 ```bash
 sudo systemctl enable --now restic-nas-sync.timer
 ```
+
+## Documentation
+
+The full documentation is available on GitHub Pages:
+
+https://anarchis12.github.io/restic-nas-backup/
