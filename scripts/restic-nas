@@ -9,7 +9,8 @@ shift || true
 
 SYNC="/usr/local/sbin/restic-nas-sync.sh"
 SNAPSHOT_RESTORE="/usr/local/sbin/restic-restore.sh"
-REPOSITORY_RESTORE="/usr/local/sbin/restic-nas-restore-repository"
+REPOSITORY_RESTORE="/usr/local/sbin/restic-nas-restore-repository.sh"
+TIMER="/etc/systemd/system/restic-nas-sync.timer"
 
 usage() {
     cat <<'EOF'
@@ -21,35 +22,47 @@ Usage:
   restic-nas restore-repository
   restic-nas verify
   restic-nas status
+  restic-nas schedule
+  restic-nas schedule set DAYS TIME
   restic-nas help
 
-Commands:
-  backup              Mirror the local Restic repository to the NAS.
-  restore             Restore files from a Restic snapshot.
-  restore-repository  Replace the local Restic repository with the NAS copy.
-  verify              Check the Restic repository stored on the NAS.
-  status              Show NAS mount and repository status.
+Examples:
+  restic-nas schedule
+  restic-nas schedule set Mon..Sun 13:00
+  restic-nas schedule set Mon,Wed,Fri 03:30
 EOF
+}
+
+require_root() {
+    [[ $EUID -eq 0 ]] || { echo "ERROR: this command requires root." >&2; exit 1; }
+}
+
+apply_schedule() {
+    local days="$1" time="$2"
+    [[ "$time" =~ ^([01][0-9]|2[0-3]):[0-5][0-9]$ ]] || {
+        echo "ERROR: invalid time. Use HH:MM." >&2; exit 1;
+    }
+    [[ "$days" =~ ^[A-Za-z,-]+(..[A-Za-z]+)?$ ]] || {
+        echo "ERROR: invalid days. Use Mon..Sun or Mon,Wed,Fri." >&2; exit 1;
+    }
+    sed -i -E "s/^BACKUP_TIME=.*/BACKUP_TIME=\"$time\"/" "$CONFIG"
+    sed -i -E "s/^BACKUP_DAYS=.*/BACKUP_DAYS=\"$days\"/" "$CONFIG"
+    sed -i -E "s|^OnCalendar=.*|OnCalendar=$days $time:00|" "$TIMER"
+    systemctl daemon-reload
+    systemctl restart restic-nas-sync.timer
+    echo "Schedule updated: $days at $time"
+    systemctl list-timers restic-nas-sync.timer --no-pager
 }
 
 require_mount() {
     local mount="${MOUNT_POINT:-/mnt/restic}"
-    mountpoint -q "$mount" || {
-        echo "ERROR: $mount is not mounted." >&2
-        exit 1
-    }
+    mountpoint -q "$mount" || { echo "ERROR: $mount is not mounted." >&2; exit 1; }
 }
 
 case "$COMMAND" in
-    backup|sync)
-        exec "$SYNC" "$@"
-        ;;
-    restore)
-        exec "$SNAPSHOT_RESTORE" "${1:-/restore}" "${2:-}"
-        ;;
-    restore-repository|recover)
-        exec "$REPOSITORY_RESTORE" "$@"
-        ;;
+    backup|sync) exec "$SYNC" "$@" ;;
+    restore) exec "$SNAPSHOT_RESTORE" "${1:-/restore}" "${2:-}" ;;
+    restore-repository|recover) exec "$REPOSITORY_RESTORE" "$@" ;;
     verify|check)
         require_mount
         exec restic -r "${MOUNT_POINT:-/mnt/restic}" check "$@"
@@ -60,24 +73,21 @@ case "$COMMAND" in
         echo "-----------------"
         echo "Repository : ${RESTIC_DATA:-/srv/rest-server/data}"
         echo "NAS mount  : $MOUNT"
-        if mountpoint -q "$MOUNT"; then
-            echo "NAS status : mounted"
-            findmnt "$MOUNT" || true
-        else
-            echo "NAS status : NOT MOUNTED"
-        fi
+        echo "Schedule   : ${BACKUP_DAYS:-Mon..Sun} at ${BACKUP_TIME:-13:00}"
+        if mountpoint -q "$MOUNT"; then echo "NAS status : mounted"; findmnt "$MOUNT" || true; else echo "NAS status : NOT MOUNTED"; fi
         echo
-        if command -v docker >/dev/null 2>&1; then
-            docker inspect -f 'rest-server: {{.State.Status}}' "${REST_SERVER_CONTAINER:-rest-server}" 2>/dev/null || echo "rest-server: not found"
+        docker inspect -f 'rest-server: {{.State.Status}}' "${REST_SERVER_CONTAINER:-rest-server}" 2>/dev/null || echo "rest-server: not found"
+        ;;
+    schedule)
+        if [[ "${1:-}" == "set" ]]; then
+            require_root
+            [[ $# -eq 3 ]] || { echo "Usage: restic-nas schedule set DAYS TIME" >&2; exit 2; }
+            apply_schedule "$2" "$3"
+        else
+            echo "Schedule: ${BACKUP_DAYS:-Mon..Sun} at ${BACKUP_TIME:-13:00}"
+            systemctl list-timers restic-nas-sync.timer --no-pager
         fi
         ;;
-    help|-h|--help)
-        usage
-        ;;
-    *)
-        echo "Unknown command: $COMMAND" >&2
-        echo >&2
-        usage >&2
-        exit 2
-        ;;
+    help|-h|--help) usage ;;
+    *) echo "Unknown command: $COMMAND" >&2; usage >&2; exit 2 ;;
 esac
