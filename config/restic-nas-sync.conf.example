@@ -1,21 +1,17 @@
 # Configuration for restic-nas-backup
 # Copy this file to /etc/restic-nas-sync.conf on the backup server.
 
-# Local Restic repository used by rest-server.
 RESTIC_DATA="/srv/rest-server/data"
-
-# Local mount point of the NAS SMB share.
 MOUNT_POINT="/mnt/restic"
-
-# NAS address. Change only this value if the NAS IP changes.
-# Keep the real value in the local config; do not commit your LAN IP.
 NAS_IP=""
-
-# NAS SMB share name.
 NAS_SHARE="Restic"
-
-# Docker container running rest-server.
 REST_SERVER_CONTAINER="rest-server"
-
-# rsync options. --delete-delay keeps the NAS copy as a mirror.
 RSYNC_OPTIONS="-aHAX --numeric-ids --delete-delay"
+
+# Backup schedule.
+# Examples:
+#   BACKUP_TIME="13:00"
+#   BACKUP_DAYS="Mon..Sun"       # every day
+#   BACKUP_DAYS="Mon,Wed,Fri"    # selected days
+BACKUP_TIME="13:00"
+BACKUP_DAYS="Mon..Sun"
