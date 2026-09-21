@@ -93,12 +93,13 @@ Example:
 ```bash
 RESTIC_DATA="/srv/rest-server/data"
 MOUNT_POINT="/mnt/restic"
-NAS_SOURCE="//192.0.2.10/Restic"
+NAS_IP="192.0.2.10"
+NAS_SHARE="Restic"
 REST_SERVER_CONTAINER="rest-server"
 RSYNC_OPTIONS="-aHAX --numeric-ids --delete-delay"
 ```
 
-Replace the example NAS source with your real local share. Do not commit that value back to the public repository.
+Set `NAS_IP` to the current NAS address. If the NAS gets a new IP, change only `NAS_IP` in the local configuration. Keep the real value out of the public repository.
 
 ## Test
 
