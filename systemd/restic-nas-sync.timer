@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Restic repository mirror at 13:00 Europe/Paris
+
+[Timer]
+OnCalendar=*-*-* 13:00:00
+Persistent=true
+Unit=restic-nas-sync.service
+
+[Install]
+WantedBy=timers.target
