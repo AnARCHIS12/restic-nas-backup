@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Installation de restic-nas-backup.">
+  <title>Installation — restic-nas-backup</title>
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./index.html"><span class="brand-mark">R</span><span>restic-nas-backup</span></a>
+    <nav>
+      <a href="./index.html">Accueil</a>
+      <a class="active" href="./installation.html">Installation</a>
+      <a href="./restauration.html">Restauration</a>
+      <a class="github-link" href="https://github.com/AnARCHIS12/restic-nas-backup">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="doc">
+    <div class="doc-heading">
+      <div class="eyebrow">GUIDE</div>
+      <h1>Installation</h1>
+      <p>Mettre en place la copie quotidienne du repository Restic vers un NAS SMB/CIFS.</p>
+    </div>
+
+    <aside class="notice"><strong>Principe</strong> Le script ne stocke aucun mot de passe dans le dépôt. Le fichier SMB reste local sur le serveur.</aside>
+
+    <section>
+      <h2>1. Préparer le partage NAS</h2>
+      <p>Créez un partage, par exemple <code>Restic</code>, avec un compte NAS disposant de la lecture/écriture.</p>
+    </section>
+
+    <section>
+      <h2>2. Monter le NAS</h2>
+      <pre><code>sudo mkdir -p /mnt/restic
+
+sudo mount -t cifs //NAS_IP/Restic /mnt/restic \
+  -o credentials=/root/.smb-restic,vers=3.0,sec=ntlmssp
+
+findmnt /mnt/restic</code></pre>
+      <p>La dernière commande doit afficher le partage CIFS du NAS. Ne lancez aucune synchronisation si <code>/mnt/restic</code> n'est pas réellement monté.</p>
+    </section>
+
+    <section>
+      <h2>3. Installer</h2>
+      <pre><code>git clone https://github.com/AnARCHIS12/restic-nas-backup.git
+cd restic-nas-backup
+sudo ./install.sh</code></pre>
+    </section>
+
+    <section>
+      <h2>4. Configurer</h2>
+      <pre><code>sudo nano /etc/restic-nas-sync.conf</code></pre>
+      <p>Exemple local :</p>
+      <pre><code>RESTIC_DATA="/srv/rest-server/data"
+MOUNT_POINT="/mnt/restic"
+NAS_SOURCE="//NAS_IP/Restic"
+REST_SERVER_CONTAINER="rest-server"
+RSYNC_OPTIONS="-aHAX --numeric-ids --delete-delay"</code></pre>
+      <p>Remplacez <code>NAS_IP</code> par votre adresse locale. Ne remettez pas cette valeur dans un dépôt public si vous souhaitez garder votre topologie interne privée.</p>
+    </section>
+
+    <section>
+      <h2>5. Programmer à 13:00</h2>
+      <p>Le timer fourni lance la synchronisation chaque jour à 13:00, selon le fuseau horaire du serveur.</p>
+      <pre><code>sudo systemctl daemon-reload
+sudo systemctl enable --now restic-nas-sync.timer
+
+systemctl list-timers restic-nas-sync.timer</code></pre>
+    </section>
+
+    <section>
+      <h2>6. Tester immédiatement</h2>
+      <pre><code>sudo systemctl start restic-nas-sync.service
+sudo journalctl -u restic-nas-sync.service -n 100 --no-pager</code></pre>
+    </section>
+  </main>
+
+  <footer>
+    <span>Installation</span>
+    <a href="./index.html">← Retour à l'accueil</a>
+  </footer>
+</body>
+</html>
