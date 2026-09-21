@@ -2,6 +2,12 @@
 
 Automate a local Restic repository mirror to an SMB/NAS share with systemd.
 
+## Documentation
+
+**Documentation web :** https://anarchis12.github.io/restic-nas-backup/
+
+The site contains the installation and restoration guides.
+
 ## What it does
 
 This project mirrors an existing Restic repository, for example:
