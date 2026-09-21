@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+CONFIG="/etc/restic-nas-sync.conf"
+[[ -f "$CONFIG" ]] && source "$CONFIG"
+
+COMMAND="${1:-help}"
+shift || true
+
+SYNC="/usr/local/sbin/restic-nas-sync.sh"
+SNAPSHOT_RESTORE="/usr/local/sbin/restic-restore.sh"
+REPOSITORY_RESTORE="/usr/local/sbin/restic-nas-restore-repository"
+
+usage() {
+    cat <<'EOF'
+restic-nas — simple backup and recovery toolkit
+
+Usage:
+  restic-nas backup
+  restic-nas restore [TARGET] [SNAPSHOT_ID]
+  restic-nas restore-repository
+  restic-nas verify
+  restic-nas status
+  restic-nas help
+
+Commands:
+  backup              Mirror the local Restic repository to the NAS.
+  restore             Restore files from a Restic snapshot.
+  restore-repository  Replace the local Restic repository with the NAS copy.
+  verify              Check the Restic repository stored on the NAS.
+  status              Show NAS mount and repository status.
+EOF
+}
+
+require_mount() {
+    local mount="${MOUNT_POINT:-/mnt/restic}"
+    mountpoint -q "$mount" || {
+        echo "ERROR: $mount is not mounted." >&2
+        exit 1
+    }
+}
+
+case "$COMMAND" in
+    backup|sync)
+        exec "$SYNC" "$@"
+        ;;
+    restore)
+        exec "$SNAPSHOT_RESTORE" "${1:-/restore}" "${2:-}"
+        ;;
+    restore-repository|recover)
+        exec "$REPOSITORY_RESTORE" "$@"
+        ;;
+    verify|check)
+        require_mount
+        exec restic -r "${MOUNT_POINT:-/mnt/restic}" check "$@"
+        ;;
+    status)
+        MOUNT="${MOUNT_POINT:-/mnt/restic}"
+        echo "restic-nas status"
+        echo "-----------------"
+        echo "Repository : ${RESTIC_DATA:-/srv/rest-server/data}"
+        echo "NAS mount  : $MOUNT"
+        if mountpoint -q "$MOUNT"; then
+            echo "NAS status : mounted"
+            findmnt "$MOUNT" || true
+        else
+            echo "NAS status : NOT MOUNTED"
+        fi
+        echo
+        if command -v docker >/dev/null 2>&1; then
+            docker inspect -f 'rest-server: {{.State.Status}}' "${REST_SERVER_CONTAINER:-rest-server}" 2>/dev/null || echo "rest-server: not found"
+        fi
+        ;;
+    help|-h|--help)
+        usage
+        ;;
+    *)
+        echo "Unknown command: $COMMAND" >&2
+        echo >&2
+        usage >&2
+        exit 2
+        ;;
+esac
