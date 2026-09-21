@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+<title id="title">restic-nas-backup logo</title>
+<desc id="desc">Red circular backup arrows around a white NAS server stack.</desc>
+<defs>
+<linearGradient id="red" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff3b30"/><stop offset="1" stop-color="#b40000"/></linearGradient>
+</defs>
+<circle cx="80" cy="80" r="68" fill="#0b0d11" stroke="url(#red)" stroke-width="14"/>
+<path d="M47 54c9-16 26-27 45-27 15 0 29 7 38 18l-9 8c-7-8-17-13-29-13-14 0-26 7-32 19l15-2-13 25-25-13 10-2z" fill="#ff3b30"/>
+<path d="M113 106c-9 16-26 27-45 27-15 0-29-7-38-18l9-8c7 8 17 13 29 13 14 0 26-7 32-19l-15 2 13-25 25 13-10 2z" fill="#ff3b30"/>
+<rect x="48" y="64" width="64" height="19" rx="4" fill="#f5f5f5"/>
+<rect x="48" y="87" width="64" height="19" rx="4" fill="#dedede"/>
+<rect x="48" y="110" width="64" height="19" rx="4" fill="#c9c9c9"/>
+<circle cx="62" cy="73.5" r="3" fill="#d40000"/>
+<circle cx="62" cy="96.5" r="3" fill="#d40000"/>
+<circle cx="62" cy="119.5" r="3" fill="#d40000"/>
+<path d="M78 70h24M78 93h24M78 116h24" stroke="#7b7f87" stroke-width="3" stroke-linecap="round"/>
+</svg>
