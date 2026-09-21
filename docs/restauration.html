@@ -1,51 +1,51 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Restauration depuis la copie NAS de restic-nas-backup.">
-<title>Restauration — restic-nas-backup</title>
+<title>Restoration — restic-nas-backup</title>
 <link rel="stylesheet" href="./style.css">
 <script defer src="./app.js"></script>
 </head>
 <body>
 <header class="topbar">
-<a class="brand" href="./index.html"><span class="brand-mark">R</span><span>restic-nas-backup</span></a>
+<a class="brand" href="./index.html"><img class="site-logo" src="./logo.svg" alt="restic-nas-backup logo"><span>restic-nas-backup</span></a>
 <nav>
-<a href="./index.html">Accueil</a>
+<a href="./index.html">Home</a>
 <a href="./installation.html">Installation</a>
-<a class="active" href="./restauration.html">Restauration</a>
+<a class="active" href="./restauration.html">Restoration</a>
 <a class="github-link" href="https://github.com/AnARCHIS12/restic-nas-backup">GitHub</a>
 </nav>
 </header>
 <main class="doc">
 <div class="doc-heading">
 <div class="eyebrow">GUIDE</div>
-<h1>Restauration</h1>
-<p>La copie NAS est un repository Restic. Vous pouvez donc l'utiliser comme source de restauration.</p>
+<h1>Restoration</h1>
+<p>The NAS copy is a Restic repository, so it can be used directly as a restoration source.</p>
 </div>
 <section>
-<h2>1. Vérifier le partage NAS</h2>
+<h2>1. Verify the NAS share</h2>
 <pre><code>findmnt /mnt/restic</code></pre>
-<p>Le résultat doit montrer le partage CIFS du NAS.</p>
+<p>The result must show the NAS CIFS share.</p>
 </section>
 <section>
-<h2>2. Lister les snapshots</h2>
+<h2>2. List snapshots</h2>
 <pre><code>sudo restic -r /mnt/restic snapshots</code></pre>
 </section>
 <section>
-<h2>3. Restaurer vers un répertoire de travail</h2>
+<h2>3. Restore to a working directory</h2>
 <pre><code>sudo mkdir -p /restore
 sudo restic -r /mnt/restic restore ID_DU_SNAPSHOT --target /restore</code></pre>
-<p>La restauration est placée dans <code>/restore</code>, ce qui permet de vérifier les fichiers avant toute remise en production.</p>
+<p>The restore is placed in <code>/restore</code>, allowing you to verify files before putting them back into production.</p>
 </section>
 <section>
-<h2>4. Script fourni</h2>
+<h2>4. Provided helper</h2>
 <pre><code>sudo /usr/local/sbin/restic-restore.sh</code></pre>
-<p>Le script liste les snapshots et demande lequel restaurer.</p>
+<p>The helper lists the snapshots and asks which one to restore.</p>
 </section>
-<aside class="notice warning"><strong>Important</strong> La copie du repository ne réinstalle pas Debian, Docker ou les services à elle seule. Elle fournit les données et snapshots Restic nécessaires à une restauration ; la reconstruction du système dépend ensuite de votre procédure d'installation.</aside>
+<aside class="notice warning"><strong>Important</strong> Copying the repository does not reinstall Debian, Docker or services by itself. It provides the Restic data and snapshots needed for restoration; rebuilding the system still depends on your installation procedure.</aside>
 </main>
-<footer><span>Restauration</span><a href="./index.html">← Retour à l'accueil</a></footer>
+<footer><span>Restoration</span><a href="./index.html">← Back to home</a></footer>
 </body>
 </html>
