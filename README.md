@@ -44,7 +44,8 @@ The supplied timer runs every day at **13:00**, using the server's local timezon
 - Safety checks before writing to the destination
 - Automatic stop/start of the Rest Server container
 - Locking against concurrent runs
-- Simple restoration helper
+- Simple snapshot restoration helper
+- **Full Restic repository recovery from the NAS copy**
 
 ## Security
 
@@ -102,7 +103,7 @@ Example:
 ```bash
 RESTIC_DATA="/srv/rest-server/data"
 MOUNT_POINT="/mnt/restic"
-NAS_IP="NAS_IP_DU_NAS"
+NAS_IP="NAS_IP"
 NAS_SHARE="Restic"
 REST_SERVER_CONTAINER="rest-server"
 RSYNC_OPTIONS="-aHAX --numeric-ids --delete-delay"
@@ -124,7 +125,7 @@ Check the timer:
 systemctl list-timers restic-nas-sync.timer
 ```
 
-## Restore
+## Restore files from a snapshot
 
 List snapshots from the NAS copy:
 
@@ -151,6 +152,28 @@ sudo /usr/local/sbin/restic-restore.sh /restore 12345678
 ```
 
 The Restic repository password is still required.
+
+## Full repository recovery
+
+If the local Restic repository at `/srv/rest-server/data` is lost or needs to be replaced by the NAS mirror, use:
+
+```bash
+sudo /usr/local/sbin/restic-nas-restore-repository
+```
+
+The command:
+
+1. Verifies that `/mnt/restic` is the expected NAS share.
+2. Checks that the NAS contains the expected Restic repository structure.
+3. Requires you to type `RESTORE` before making changes.
+4. Stops the `rest-server` container if it is running.
+5. Mirrors the NAS repository back to `/srv/rest-server/data/`.
+6. Deletes local repository files that are not present in the NAS copy.
+7. Restarts `rest-server` when finished.
+
+This restores the **Restic repository itself**, rather than merely extracting files from one snapshot.
+
+> The recovery command intentionally does not reinstall Debian, Docker, or other system software. It restores the Restic repository data used by `rest-server`.
 
 ## Manual controls
 
