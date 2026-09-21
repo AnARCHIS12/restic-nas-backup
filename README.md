@@ -233,7 +233,7 @@ The GUI uses the existing `restic-nas` CLI through a hardened host agent. It pro
 
 The GUI does not replace the CLI. The CLI remains the underlying backup and recovery engine.
 
-For the GUI installation and production checklist, see its repository README.
+For local-only GUI testing before publication, see [docs/web-gui-local-testing.md](docs/web-gui-local-testing.md) and the GUI repository's [LOCAL-TESTING.md](https://github.com/AnARCHIS12/restic-nas-backup-gui/blob/main/LOCAL-TESTING.md). For the GUI installation and production checklist, see its repository README.
 
 ## Documentation
 
