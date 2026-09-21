@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="restic-nas-backup — répliquer automatiquement un repository Restic vers un NAS avec systemd.">
+  <meta name="description" content="restic-nas-backup — automatically mirror a Restic repository to a NAS with systemd.">
   <title>restic-nas-backup — Documentation</title>
   <link rel="stylesheet" href="./style.css">
   <script defer src="./app.js"></script>
@@ -11,11 +11,11 @@
 <body>
   <div class="noise"></div>
   <header class="topbar">
-    <a class="brand" href="./index.html"><span class="brand-mark">R</span><span>restic-nas-backup</span></a>
+    <a class="brand" href="./index.html"><img class="site-logo" src="./logo.svg" alt="restic-nas-backup logo"><span>restic-nas-backup</span></a>
     <nav>
-      <a class="active" href="./index.html">Accueil</a>
+      <a class="active" href="./index.html">Home</a>
       <a href="./installation.html">Installation</a>
-      <a href="./restauration.html">Restauration</a>
+      <a href="./restauration.html">Restoration</a>
       <a class="github-link" href="https://github.com/AnARCHIS12/restic-nas-backup">GitHub</a>
     </nav>
   </header>
@@ -24,16 +24,16 @@
     <section class="hero">
       <div class="hero-copy">
         <div class="eyebrow">RESTIC · NAS · SYSTEMD</div>
-        <h1>Une seconde copie de votre repository Restic.<span>Automatiquement.</span></h1>
-        <p class="lead">restic-nas-backup arrête proprement rest-server, réplique le repository vers un partage NAS et le relance. La planification se fait avec systemd timer.</p>
+        <h1>A second copy of your Restic repository.<span>Automatically.</span></h1>
+        <p class="lead">restic-nas-backup cleanly stops rest-server, mirrors the repository to a NAS share, then starts it again. Scheduling is handled by a systemd timer.</p>
         <div class="actions">
-          <a class="button primary" href="./installation.html">Installer</a>
-          <a class="button ghost" href="https://github.com/AnARCHIS12/restic-nas-backup">Voir le dépôt</a>
+          <a class="button primary" href="./installation.html">Get started</a>
+          <a class="button ghost" href="https://github.com/AnARCHIS12/restic-nas-backup">View repository</a>
         </div>
         <div class="chips">
-          <span>13:00 quotidien</span>
+          <span>Daily at 13:00</span>
           <span>SMB / CIFS</span>
-          <span>Sans secret dans Git</span>
+          <span>No secrets in Git</span>
         </div>
       </div>
       <div class="terminal">
@@ -50,26 +50,26 @@
 
     <section class="stats">
       <article><strong>1</strong><span>repository source</span></article>
-      <article><strong>1</strong><span>copie NAS</span></article>
-      <article><strong>13:00</strong><span>chaque jour</span></article>
-      <article><strong>0</strong><span>secret versionné</span></article>
+      <article><strong>1</strong><span>NAS copy</span></article>
+      <article><strong>13:00</strong><span>every day</span></article>
+      <article><strong>0</strong><span>versioned secrets</span></article>
     </section>
 
     <section class="grid">
       <article class="card">
         <div class="icon">01</div>
-        <h2>Protection contre une mauvaise destination</h2>
-        <p>Le script vérifie que <code>/mnt/restic</code> est réellement un montage CIFS correspondant à la source NAS configurée avant toute écriture.</p>
+        <h2>Protection against wrong destinations</h2>
+        <p>The script verifies that <code>/mnt/restic</code> is a real CIFS mount matching the configured NAS source before writing anything.</p>
       </article>
       <article class="card">
         <div class="icon">02</div>
-        <h2>Arrêt propre de rest-server</h2>
-        <p>Le service est arrêté pendant la réplication puis redémarré automatiquement, y compris lorsqu'une erreur survient.</p>
+        <h2>Clean rest-server shutdown</h2>
+        <p>The service stops during replication and restarts automatically, including when an error occurs.</p>
       </article>
       <article class="card">
         <div class="icon">03</div>
-        <h2>Planification native</h2>
-        <p>Pas de cron caché : un service et un timer systemd faciles à contrôler, journaliser et désactiver.</p>
+        <h2>Native scheduling</h2>
+        <p>No hidden cron job: a systemd service and timer that are easy to inspect, control and disable.</p>
       </article>
     </section>
 
@@ -77,7 +77,7 @@
       <div>
         <div class="eyebrow">ARCHITECTURE</div>
         <h2>Simple à comprendre. Simple à restaurer.</h2>
-        <p>Le NAS contient une copie exploitable du repository. Après montage du partage, Restic peut lire les snapshots directement depuis cette copie.</p>
+        <p>The NAS contains a usable copy of the repository. Once the share is mounted, Restic can read snapshots directly from that copy.</p>
       </div>
       <div class="diagram">
         <div class="node"><small>SOURCE</small><b>/srv/rest-server/data</b></div>
@@ -90,8 +90,8 @@
 
     <section class="cta">
       <div>
-        <div class="eyebrow">PRÊT À COMMENCER</div>
-        <h2>Deux commandes pour découvrir le workflow.</h2>
+        <div class="eyebrow">GET STARTED</div>
+        <h2>Start the workflow in a few commands.</h2>
       </div>
       <pre><code>git clone https://github.com/AnARCHIS12/restic-nas-backup.git
 cd restic-nas-backup
@@ -101,7 +101,7 @@ sudo ./install.sh</code></pre>
 
   <footer>
     <span>restic-nas-backup</span>
-    <span>Open source · Apache-2.0 compatible project tooling</span>
+    <span>Open source · systemd · SMB/CIFS</span>
   </footer>
 </body>
 </html>
