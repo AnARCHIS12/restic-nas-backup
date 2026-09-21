@@ -1,0 +1,19 @@
+# Configuration for restic-nas-backup
+# Copy this file to /etc/restic-nas-sync.conf on the backup server.
+
+# Local Restic repository used by rest-server.
+RESTIC_DATA="/srv/rest-server/data"
+
+# Local mount point of the NAS SMB share.
+MOUNT_POINT="/mnt/restic"
+
+# Expected CIFS source. This is checked before any write.
+# Example:
+# NAS_SOURCE="//192.168.0.123/Restic"
+NAS_SOURCE=""
+
+# Docker container running rest-server.
+REST_SERVER_CONTAINER="rest-server"
+
+# rsync options. --delete-delay keeps the NAS copy as a mirror.
+RSYNC_OPTIONS="-aHAX --numeric-ids --delete-delay"
