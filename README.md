@@ -125,6 +125,27 @@ Check the timer:
 systemctl list-timers restic-nas-sync.timer
 ```
 
+## Unified CLI
+
+The project also provides a single command for the main backup and recovery operations:
+
+```bash
+sudo restic-nas help
+```
+
+Examples:
+
+```bash
+sudo restic-nas backup
+sudo restic-nas restore
+sudo restic-nas restore /restore 12345678
+sudo restic-nas restore-repository
+sudo restic-nas verify
+sudo restic-nas status
+```
+
+The CLI is a thin layer over the existing scripts, so the original commands remain available for compatibility.
+
 ## Restore files from a snapshot
 
 List snapshots from the NAS copy:
