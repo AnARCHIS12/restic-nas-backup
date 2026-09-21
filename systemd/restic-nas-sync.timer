@@ -1,8 +1,8 @@
 [Unit]
-Description=Daily Restic repository mirror at 13:00 Europe/Paris
+Description=Restic repository mirror schedule
 
 [Timer]
-OnCalendar=*-*-* 13:00:00
+OnCalendar=${BACKUP_DAYS:-*-*-*} ${BACKUP_TIME:-13:00:00}
 Persistent=true
 Unit=restic-nas-sync.service
 
