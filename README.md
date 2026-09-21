@@ -34,11 +34,11 @@ NAS
 
 The service stops `rest-server` during the copy and starts it again when the synchronization finishes.
 
-The supplied timer runs every day at **13:00**, using the server's local timezone.
+The backup schedule is configurable by day and time and uses the server's local timezone.
 
 ## What it provides
 
-- Daily systemd scheduling at 13:00
+- Configurable systemd scheduling
 - SMB/CIFS NAS support
 - Configurable NAS IP and share
 - Safety checks before writing to the destination
@@ -46,6 +46,7 @@ The supplied timer runs every day at **13:00**, using the server's local timezon
 - Locking against concurrent runs
 - Simple snapshot restoration helper
 - **Full Restic repository recovery from the NAS copy**
+- Unified `restic-nas` CLI
 
 ## Security
 
@@ -107,17 +108,29 @@ NAS_IP="NAS_IP"
 NAS_SHARE="Restic"
 REST_SERVER_CONTAINER="rest-server"
 RSYNC_OPTIONS="-aHAX --numeric-ids --delete-delay"
+
+BACKUP_TIME="13:00"
+BACKUP_DAYS="Mon..Sun"
 ```
 
-If the NAS address changes, update only `NAS_IP` in the local configuration and make the corresponding change to your SMB mount configuration.
+`BACKUP_TIME` uses 24-hour `HH:MM` format. `BACKUP_DAYS` accepts systemd calendar day expressions such as `Mon..Sun` or `Mon,Wed,Fri`.
 
-## Test
+## Scheduling
+
+View the current schedule:
 
 ```bash
-findmnt /mnt/restic
-sudo systemctl start restic-nas-sync.service
-sudo journalctl -u restic-nas-sync.service -n 100 --no-pager
+sudo restic-nas schedule
 ```
+
+Change it without editing systemd files:
+
+```bash
+sudo restic-nas schedule set Mon..Sun 13:00
+sudo restic-nas schedule set Mon,Wed,Fri 03:30
+```
+
+The command updates the local configuration, reloads systemd and restarts the timer.
 
 Check the timer:
 
@@ -125,26 +138,28 @@ Check the timer:
 systemctl list-timers restic-nas-sync.timer
 ```
 
-## Unified CLI
+The schedule follows the server's timezone.
 
-The project also provides a single command for the main backup and recovery operations:
+## Test
+
+```bash
+sudo restic-nas backup
+sudo journalctl -u restic-nas-sync.service -n 100 --no-pager
+```
+
+## Unified CLI
 
 ```bash
 sudo restic-nas help
-```
-
-Examples:
-
-```bash
 sudo restic-nas backup
 sudo restic-nas restore
 sudo restic-nas restore /restore 12345678
 sudo restic-nas restore-repository
 sudo restic-nas verify
 sudo restic-nas status
+sudo restic-nas schedule
+sudo restic-nas schedule set Mon,Wed,Fri 03:30
 ```
-
-The CLI is a thin layer over the existing scripts, so the original commands remain available for compatibility.
 
 ## Restore files from a snapshot
 
@@ -154,32 +169,22 @@ List snapshots from the NAS copy:
 sudo restic -r /mnt/restic snapshots
 ```
 
-Restore using the helper:
+Or use the helper:
 
 ```bash
-sudo /usr/local/sbin/restic-restore.sh
+sudo restic-nas restore
 ```
 
-By default, the helper restores to:
-
-```
-/restore
-```
-
-Or specify a target and snapshot ID:
-
-```bash
-sudo /usr/local/sbin/restic-restore.sh /restore 12345678
-```
+By default, the helper restores to `/restore`.
 
 The Restic repository password is still required.
 
 ## Full repository recovery
 
-If the local Restic repository at `/srv/rest-server/data` is lost or needs to be replaced by the NAS mirror, use:
+If the local Restic repository at `/srv/rest-server/data` is lost or needs to be replaced by the NAS mirror:
 
 ```bash
-sudo /usr/local/sbin/restic-nas-restore-repository
+sudo restic-nas restore-repository
 ```
 
 The command:
@@ -194,31 +199,14 @@ The command:
 
 This restores the **Restic repository itself**, rather than merely extracting files from one snapshot.
 
-> The recovery command intentionally does not reinstall Debian, Docker, or other system software. It restores the Restic repository data used by `rest-server`.
+> The recovery command does not reinstall Debian, Docker, or other system software. It restores the repository data used by `rest-server`.
 
 ## Manual controls
 
-Start a synchronization immediately:
-
 ```bash
 sudo systemctl start restic-nas-sync.service
-```
-
-Follow logs:
-
-```bash
 sudo journalctl -u restic-nas-sync.service -f
-```
-
-Disable the daily timer:
-
-```bash
 sudo systemctl disable --now restic-nas-sync.timer
-```
-
-Re-enable it:
-
-```bash
 sudo systemctl enable --now restic-nas-sync.timer
 ```
 
