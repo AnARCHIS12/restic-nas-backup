@@ -93,7 +93,7 @@ Example:
 ```bash
 RESTIC_DATA="/srv/rest-server/data"
 MOUNT_POINT="/mnt/restic"
-NAS_IP="192.0.2.10"
+NAS_IP="NAS_IP_DU_NAS"
 NAS_SHARE="Restic"
 REST_SERVER_CONTAINER="rest-server"
 RSYNC_OPTIONS="-aHAX --numeric-ids --delete-delay"
