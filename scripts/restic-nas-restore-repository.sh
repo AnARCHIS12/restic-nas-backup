@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
+CONFIG="${RESTIC_NAS_CONF:-/etc/restic-nas-sync.conf}"
+[[ -f "$CONFIG" ]] && source "$CONFIG"
 
 REPOSITORY="${REPOSITORY:-/mnt/restic}"
 RESTIC_DATA="${RESTIC_DATA:-/srv/rest-server/data}"

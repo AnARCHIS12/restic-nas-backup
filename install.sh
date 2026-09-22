@@ -21,4 +21,11 @@ sed -i -E "s|^OnCalendar=.*|OnCalendar=${BACKUP_DAYS:-Mon..Sun} ${BACKUP_TIME:-1
 systemctl daemon-reload
 systemctl enable --now restic-nas-sync.timer
 echo "Installed. Schedule: ${BACKUP_DAYS:-Mon..Sun} at ${BACKUP_TIME:-13:00}"
-echo "Use: restic-nas schedule set Mon,Wed,Fri 03:30"
+systemctl list-timers restic-nas-sync.timer --no-pager || true
+echo
+if [[ -z "${NAS_IP:-}" ]]; then
+    echo "ATTENTION: NAS_IP n'est pas configuré dans /etc/restic-nas-sync.conf."
+    echo "Pensez à éditer le fichier avant le premier déclenchement."
+fi
+echo "Pour modifier la planification : restic-nas schedule set Mon,Wed,Fri 03:30"
+echo "Pour tester immédiatement une synchronisation : restic-nas backup"

@@ -2,7 +2,7 @@
 Description=Restic repository mirror schedule
 
 [Timer]
-OnCalendar=${BACKUP_DAYS:-*-*-*} ${BACKUP_TIME:-13:00:00}
+OnCalendar=Mon..Sun 13:00:00
 Persistent=true
 Unit=restic-nas-sync.service
 

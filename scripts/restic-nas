@@ -2,7 +2,11 @@
 set -Eeuo pipefail
 
 CONFIG="/etc/restic-nas-sync.conf"
-[[ -f "$CONFIG" ]] && source "$CONFIG"
+if [[ -f "$CONFIG" ]]; then
+    set -a
+    source "$CONFIG"
+    set +a
+fi
 
 COMMAND="${1:-help}"
 shift || true
