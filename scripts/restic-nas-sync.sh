@@ -53,7 +53,7 @@ container_state="$(docker inspect -f '{{.State.Running}}' "$REST_SERVER_CONTAINE
 if [[ "$container_state" == "true" ]]; then
     was_running=true
     log "Stopping $REST_SERVER_CONTAINER..."
-    docker stop --time 30 "$REST_SERVER_CONTAINER"
+    docker stop -t 30 "$REST_SERVER_CONTAINER"
 fi
 
 restart_container() {
