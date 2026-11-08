@@ -10,8 +10,12 @@ NAS_SHARE="Restic"
 REST_SERVER_CONTAINER="rest-server"
 RSYNC_OPTIONS="-aHAX --numeric-ids --delete-delay"
 
+# Optional credentials for automated verify / restore
+# RESTIC_PASSWORD_FILE="/etc/restic.key"
+# RESTIC_PASSWORD=""
+
 BACKUP_TIME="13:00"
-BACKUP_DAYS="Mon..Sun"</code></pre><p><code>BACKUP_TIME</code> uses 24-hour <code>HH:MM</code>. <code>BACKUP_DAYS</code> can use expressions such as <code>Mon..Sun</code> or <code>Mon,Wed,Fri</code>.</p></section><section><h2>5. Change the schedule</h2><pre><code>sudo restic-nas schedule
+BACKUP_DAYS="Mon..Sun"</code></pre><p><code>BACKUP_TIME</code> uses 24-hour <code>HH:MM</code>. <code>BACKUP_DAYS</code> can use expressions such as <code>Mon..Sun</code> or <code>Mon,Wed,Fri</code>. <code>RESTIC_PASSWORD_FILE</code> (or <code>RESTIC_PASSWORD</code>) is optional for non-interactive integrity checks.</p></section><section><h2>5. Change the schedule</h2><pre><code>sudo restic-nas schedule
 sudo restic-nas schedule set Mon..Sun 13:00
 sudo restic-nas schedule set Mon,Wed,Fri 03:30</code></pre><p>The command updates the local configuration, updates the systemd timer, reloads systemd and restarts the timer.</p></section><section><h2>6. Test</h2><pre><code>sudo restic-nas backup
 sudo journalctl -u restic-nas-sync.service -n 100 --no-pager

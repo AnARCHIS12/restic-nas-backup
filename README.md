@@ -7,6 +7,7 @@
 **Automatically mirror a Restic repository to a NAS with systemd.**
 
 [![GitHub Pages](https://github.com/AnARCHIS12/restic-nas-backup/actions/workflows/pages.yml/badge.svg)](https://github.com/AnARCHIS12/restic-nas-backup/actions/workflows/pages.yml)
+[![Release](https://img.shields.io/badge/version-v0.2.0-10b981?logo=git&logoColor=white)](https://github.com/AnARCHIS12/restic-nas-backup/releases)
 [![Platform](https://img.shields.io/badge/platform-Linux-111318?logo=linux&logoColor=white)](https://www.linux.org/)
 [![Docker](https://img.shields.io/badge/Docker-ready-111318?logo=docker&logoColor=white)](https://www.docker.com/)
 [![Restic](https://img.shields.io/badge/backup-Restic-cc0000?logo=files&logoColor=white)](https://restic.net/)
