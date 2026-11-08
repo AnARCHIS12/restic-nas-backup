@@ -1,9 +1,21 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-REPOSITORY="${REPOSITORY:-/mnt/restic}"
+CONFIG="${RESTIC_NAS_CONF:-/etc/restic-nas-sync.conf}"
+if [[ -f "$CONFIG" ]]; then
+    set -a
+    source "$CONFIG"
+    set +a
+fi
+
+REPOSITORY="${MOUNT_POINT:-${REPOSITORY:-/mnt/restic}}"
 TARGET="${1:-/restore}"
 SNAPSHOT_ID="${2:-}"
+
+extra_opts=()
+if [[ -n "${RESTIC_PASSWORD_FILE:-}" ]]; then
+    extra_opts+=(--password-file "$RESTIC_PASSWORD_FILE")
+fi
 
 command -v restic >/dev/null 2>&1 || {
     echo "ERROR: restic is not installed." >&2
@@ -22,7 +34,7 @@ echo
 
 if [[ -z "$SNAPSHOT_ID" ]]; then
     echo "Available snapshots:"
-    restic -r "$REPOSITORY" snapshots
+    restic -r "$REPOSITORY" "${extra_opts[@]}" snapshots
     echo
     read -r -p "Snapshot ID to restore: " SNAPSHOT_ID
 fi
@@ -35,7 +47,7 @@ fi
 mkdir -p "$TARGET"
 
 echo "Restoring snapshot $SNAPSHOT_ID into $TARGET ..."
-restic -r "$REPOSITORY" restore "$SNAPSHOT_ID" --target "$TARGET"
+restic -r "$REPOSITORY" "${extra_opts[@]}" restore "$SNAPSHOT_ID" --target "$TARGET"
 
 echo
 echo "Restore completed: $TARGET"

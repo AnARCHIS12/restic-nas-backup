@@ -69,7 +69,11 @@ case "$COMMAND" in
     restore-repository|recover) exec "$REPOSITORY_RESTORE" "$@" ;;
     verify|check)
         require_mount
-        exec restic -r "${MOUNT_POINT:-/mnt/restic}" check "$@"
+        extra_args=()
+        if [[ -n "${RESTIC_PASSWORD_FILE:-}" && ! " $* " =~ " --password-file " ]]; then
+            extra_args+=(--password-file "$RESTIC_PASSWORD_FILE")
+        fi
+        exec restic -r "${MOUNT_POINT:-/mnt/restic}" check "${extra_args[@]}" "$@"
         ;;
     status)
         MOUNT="${MOUNT_POINT:-/mnt/restic}"

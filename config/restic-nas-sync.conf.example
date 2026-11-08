@@ -8,6 +8,11 @@ NAS_SHARE="Restic"
 REST_SERVER_CONTAINER="rest-server"
 RSYNC_OPTIONS="-aHAX --numeric-ids --delete-delay"
 
+# Optional credentials for non-interactive operations (e.g. restic-nas verify, automated restore).
+# If omitted or left empty, restic prompts interactively for the password.
+# RESTIC_PASSWORD_FILE="/etc/restic.key"
+# RESTIC_PASSWORD=""
+
 # Backup schedule.
 # Examples:
 #   BACKUP_TIME="13:00"

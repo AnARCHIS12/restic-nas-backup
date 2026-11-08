@@ -110,11 +110,16 @@ NAS_SHARE="Restic"
 REST_SERVER_CONTAINER="rest-server"
 RSYNC_OPTIONS="-aHAX --numeric-ids --delete-delay"
 
+# Optional credentials for non-interactive commands (restic-nas verify, automated restore)
+# RESTIC_PASSWORD_FILE="/etc/restic.key"
+# RESTIC_PASSWORD=""
+
 BACKUP_TIME="13:00"
 BACKUP_DAYS="Mon..Sun"
 ```
 
 `BACKUP_TIME` uses 24-hour `HH:MM` format. `BACKUP_DAYS` accepts systemd calendar day expressions such as `Mon..Sun` or `Mon,Wed,Fri`.
+`RESTIC_PASSWORD_FILE` (or `RESTIC_PASSWORD`) is optional; if omitted, `restic` prompts interactively for the password during `verify` or `restore`.
 
 ## Scheduling
 
